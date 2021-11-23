@@ -23,10 +23,41 @@ def test():
             ki    = 5.6, 
             kd    = 0.01, 
             speed = 10)
-
     except KeyboardInterrupt:
         print("\n\nInterrupted via CTRL+C")
         app.exit()
+
+def cs():
+    while True:
+        try:
+            hw.print_cs()
+    
+
+        except KeyboardInterrupt:
+            print("\n\nInterrupted via CTRL+C")
+            app.exit()
+
+
+def grap_can():
+    hw.motors.on(-50,-50)
+    while True:
+        try:
+            if hw.ts.is_pressed:
+                print("PRESSED")
+                hw.motors.off()
+                hw.mot_g.on(-10)
+
+        except KeyboardInterrupt:
+            hw.mot_g.on(0)
+            print("\n\nInterrupted via CTRL+C")
+            app.exit()
+
+
+grap_can()
+
+
+#hw.motors.follow_line_dual(4.0, 0.0, 0.0, -90)
+   
 
 
 

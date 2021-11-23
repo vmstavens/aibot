@@ -29,6 +29,7 @@ ts             = TouchSensor(ADDR_TS)
 mot_r          = Motor(ADDR_MOT_R)
 mot_l          = Motor(ADDR_MOT_L)
 motors         = MoveTank(ADDR_MOT_L, ADDR_MOT_R)
+mot_g		   = Motor(ADDR_MOT_G)
 
 # set object of motors
 motors.cs_r    = cs_r
@@ -142,33 +143,38 @@ def follow_line_dual(self,kp, ki, kd, speed):
 
 	# while follow_for(self, **kwargs):
 	while True:
+		try:
+			e = self.cs_l.reflected_light_intensity - self.cs_r.reflected_light_intensity
+			i += e
+			#print_cs()
+			d = (e - e_prev)
+			# d = (e - e_prev) / dt
+			# d = d_prev + ((dt / (RC + dt)) * (d - d_prev))
+			# d_prev = d
 
-		e = self.cs_l.reflected_light_intensity - self.cs_r.reflected_light_intensity
-		i += e
+			u = (kp * e) + (ki * i) + (kd * d)
+			e_prev = e
 
-		d = (e - e_prev)
-		# d = (e - e_prev) / dt
-		# d = d_prev + ((dt / (RC + dt)) * (d - d_prev))
-		# d_prev = d
+			# slewrate
+			# if (SLEW_RATE and t < 1):
+			# 	t = time.clock() - t0
+			# 	max_speed = SPEED_MAX_NATIVE * min(t * SLEW_RATE, 1.0)
 
-		u = (kp * e) + (ki * i) + (kd * d)
-		e_prev = e
+			# convert to native speed units (saturated)
 
-		# slewrate
-		# if (SLEW_RATE and t < 1):
-		# 	t = time.clock() - t0
-		# 	max_speed = SPEED_MAX_NATIVE * min(t * SLEW_RATE, 1.0)
+			speed_left  = SpeedNativeUnits(saturate(speed_native_units - u, max_speed))
+			speed_right = SpeedNativeUnits(saturate(speed_native_units + u, max_speed))
 
-		# convert to native speed units (saturated)
-		speed_left  = SpeedNativeUnits(saturate(speed_native_units - u, max_speed))
-		speed_right = SpeedNativeUnits(saturate(speed_native_units + u, max_speed))
+			# if sleep_time:
+			# 	time.sleep(sleep_time)
+			print("Speed LEFT: ", speed_left, "    SPEED RIGHT: ", speed_right)
+			self.on(speed_left, speed_right)
+		
+		except KeyboardInterrupt:
+        		print("\n\nInterrupted via CTRL+C")
+        		self.stop()
+				
 
-		# if sleep_time:
-		# 	time.sleep(sleep_time)
-
-		self.on(speed_left, speed_right)
-
-	self.stop()
 
 # MoveTank.follow_line_until_n_intersections()
 def follow_line_until_n_intersections(self, n, min_dist, speed):
