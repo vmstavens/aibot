@@ -2,7 +2,7 @@
 
 import time
 from math import pi
-from constants import ADDR_TS
+# from constants import *
 
 from ev3dev2.sensor.lego import TouchSensor
 from ev3dev2.sensor.lego import UltrasonicSensor

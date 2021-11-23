@@ -24,8 +24,8 @@ ADDR_CS_L                 = "ev3-ports:in1"
 ADDR_CS_R                 = "ev3-ports:in2"
 ADDR_TS                   = "ev3-ports:in4"
 
-ADDR_MOT_L                = "ev3-ports:outA"
-ADDR_MOT_R                = "ev3-ports:outB"
+ADDR_MOT_L                = "ev3-ports:outB"
+ADDR_MOT_R                = "ev3-ports:outA"
 ADDR_MOT_G                = "ev3-ports:outC"
 
 # threshold species value before it is categorized as BLACK
