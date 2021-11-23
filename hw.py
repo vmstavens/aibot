@@ -2,6 +2,7 @@
 
 import time
 from math import pi
+from constants import ADDR_TS
 
 from ev3dev2.sensor.lego import TouchSensor
 from ev3dev2.sensor.lego import UltrasonicSensor
@@ -19,10 +20,10 @@ from aibot.constants import *
 # ----------------------------------------------------------------------
 
 # sensor objects
-cs_l           = ColorSensor(ADDR_CS_L)
 cs_r           = ColorSensor(ADDR_CS_R)
+cs_l           = ColorSensor(ADDR_CS_L)
 gs             = GyroSensor(ADDR_GS)
-ts             = 
+ts             = TouchSensor(ADDR_TS)
 
 # motor objects
 mot_r          = Motor(ADDR_MOT_R)
@@ -30,17 +31,10 @@ mot_l          = Motor(ADDR_MOT_L)
 motors         = MoveTank(ADDR_MOT_L, ADDR_MOT_R)
 
 # set object of motors
-motors.gyro    = gs
 motors.cs_r    = cs_r
 motors.cs_l    = cs_l
-#motors.ls_f    = ls_f
-
-# ----------------------------------------------------------------------
-# Test functions
-# def line_test(self):
-# 	follow_line_dual()
-
-
+motors.gyro    = gs
+motors.ts      = ts
 
 # ----------------------------------------------------------------------
 
@@ -52,14 +46,6 @@ def print_cs():
 	cs_r  = motors.cs_r.reflected_light_intensity
 
 	print(cs_l, cs_r)
-	
-# def print_cs_and_ls():
-
-# 	cs_l  = motors.cs_l.reflected_light_intensity
-# 	cs_r  = motors.cs_r.reflected_light_intensity
-# 	ls_f  = motors.ls_f.reflected_light_intensity
-
-# 	print(cs_l, cs_r, ls_f)
 
 def min(lhs, rhs):
 	return (lhs if lhs < rhs else rhs)
@@ -81,19 +67,13 @@ def saturate(val, limit):
 
 # MoveTank.reset()
 def reset(self):
-
 	self.left_motor.reset()
 	self.right_motor.reset()
 	
 # MoveTank.current_pos()
 def current_pos(self):
-
 	return { "left": self.left_motor.position, "right": self.right_motor.position }
 	
-#Bolean that returns true if both color sensors are on black (intersection)	
-def at_intersection(self, th_black):
-	return ((self.cs_l.reflected_light_intensity <= th_black) and (self.cs_r.reflected_light_intensity <= th_black))
-
 # MoveTank.follow_for_dist()
 def follow_for_dist(self, dist, pos_start):
 
@@ -104,24 +84,6 @@ def follow_for_dist(self, dist, pos_start):
 	avg   = (pos_l + pos_r) / 2
 
 	return (avg <= dist)
-	
-# MoveTank.follow_until_intersection()
-def follow_until_intersection(self, min_dist, pos_start, th_black):
-
-	# callback function, in order to know when to stop line following
-
-	pos_l = abs(self.left_motor.position  - pos_start["left"])
-	pos_r = abs(self.right_motor.position - pos_start["right"])
-	avg   = (pos_l + pos_r) / 2
-
-	cs_l  = self.cs_l.reflected_light_intensity
-	cs_r  = self.cs_r.reflected_light_intensity
-
-	if (avg < min_dist):
-		return True
-
-	else:
-		return not ((cs_l <= th_black) and (cs_r <= th_black))
 
 # MoveTank.follow_until_n_intersections()
 def follow_until_n_intersections(self, n, min_dist, pos_start, num_seen_intersections, th_black):
@@ -161,7 +123,7 @@ def follow_until_n_intersections(self, n, min_dist, pos_start, num_seen_intersec
 # MoveTank.follow_line_dual()
 # def follow_line_dual(self, kp, ki, kd, speed, sleep_time, follow_for, **kwargs):
 # def follow_line_dual(self, kp, ki, kd, speed):
-def follow_line_dual(kp, ki, kd, speed):
+def follow_line_dual(self,kp, ki, kd, speed):
 
 	# PID line follower using both color sensors
 	# requires defintion of color sensors cs_l and cs_r
@@ -251,7 +213,7 @@ def follow_line_until_can_intersection(self, speed):
 		pos_start  = pos_start,
 		min_dist   = 100,
 		th_black   = LS_TH_BLACK,
-	)
+	)  # The different branches are shown related to git in your terminal window.
 
 
 # MoveTank.follow_line_for_dist()
@@ -316,10 +278,8 @@ def follow_gyro_until_intersection(self, min_dist, speed, angle = 0):
 # append extensions
 MoveTank.reset                              = reset
 MoveTank.current_pos                        = current_pos
-MoveTank.at_intersection                    = at_intersection
 
 MoveTank.follow_for_dist                    = follow_for_dist
-MoveTank.follow_until_intersection          = follow_until_intersection
 MoveTank.follow_until_n_intersections       = follow_until_n_intersections
 #MoveTank.follow_until_can_intersection      = follow_until_can_intersection
 

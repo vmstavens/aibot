@@ -10,7 +10,6 @@ if __name__ == "__main__":
 	try:
 		
 		app.init()
-		#app.run()
 		scientific_method.test()
 	except KeyboardInterrupt:
 		
