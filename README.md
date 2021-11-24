@@ -7,3 +7,7 @@ This projects attempts to execute such a mission, where: the agent is a LEGO® M
 text
 
 - mm
+
+
+
+![test2](https://github.com/vmstavens/aibot/blob/main/docs/fig/combined_git_img.png)
