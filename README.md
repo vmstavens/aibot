@@ -14,9 +14,10 @@ Here the behavior layer provides high level functionalities such as: `line_follo
 These are build on a control layer which utilizes a hardware interface provided by the 
 [python-ev3dev2](https://ev3dev-lang.readthedocs.io/projects/python-ev3dev/en/stable/spec.html) library. 
 
-The **hardware design** consists of two components:
+The **hardware design** consists of three components:
 1. A can grabber, which can attach the tomato can to the robot when a touch is registered.
 2. Two color sensors which together make a line follower, providing the robot with the ability to navigate the environment.
+3. A gyroscope for detecting if the environments angle changes, such that the robot can provide less or further motor torque.
 
 
 The full documentation of the project can be seen [here](docs/report.pdf).
