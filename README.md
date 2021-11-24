@@ -2,6 +2,4 @@
 A search and rescue mission, is a problem which revolves around an agent locating some subject and transporting it from one opsition, back to the agent's initial position.
 This projects attempts to execute such a mission, where: the agent is a LEGO® MINDSTORMS® EV3 robot(also referred to as `aibot`) and the subject is a tomato paste can. 
 
-![docs/fig][combined_git_img]
-
-![Image showing the robot and sensors](https://github.com/vmstavens/aibot/tree/main/docs/fig)
+![aibot][combined_git_img]
