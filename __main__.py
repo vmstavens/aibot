@@ -8,9 +8,10 @@ print("hello from main")
 if __name__ == "__main__":
 
 	try:
-		
+		print("initializing")
 		app.init()
-		scientific_method.test()
+		print("Initialization done")
+		scientific_method.ramp_climb()
 	except KeyboardInterrupt:
 		
 		print("\n\nInterrupted via CTRL+C")

@@ -124,7 +124,9 @@ def follow_until_n_intersections(self, n, min_dist, pos_start, num_seen_intersec
 # MoveTank.follow_line_dual()
 # def follow_line_dual(self, kp, ki, kd, speed, sleep_time, follow_for, **kwargs):
 # def follow_line_dual(self, kp, ki, kd, speed):
-def follow_line_dual(self,kp, ki, kd, speed):
+
+
+def follow_line_ramp(self,kp, ki, kd, speed):	
 
 	# PID line follower using both color sensors
 	# requires defintion of color sensors cs_l and cs_r
@@ -168,6 +170,58 @@ def follow_line_dual(self,kp, ki, kd, speed):
 			# if sleep_time:
 			# 	time.sleep(sleep_time)
 			print("Speed LEFT: ", speed_left, "    SPEED RIGHT: ", speed_right)
+			self.on(speed_left, speed_right)
+		
+		except KeyboardInterrupt:
+        		print("\n\nInterrupted via CTRL+C")
+        		self.stop()
+				
+
+
+def follow_line_dual(self,kp, ki, kd, speed):	
+
+	# PID line follower using both color sensors
+	# requires defintion of color sensors cs_l and cs_r
+
+	# dt = sleep_time
+	# RC = 1 / (2 * pi * LP_CUTOFF_FREQ)
+
+	e = e_prev = i = d_prev = 0.0
+
+	speed = speed_to_speedvalue(speed)
+	speed_native_units = speed.to_native_units(self.left_motor)
+
+	# t0 = time.clock()
+	# t = 0
+	max_speed = SPEED_MAX_NATIVE
+
+	# while follow_for(self, **kwargs):
+	while True:
+		try:
+			e = self.cs_l.reflected_light_intensity - self.cs_r.reflected_light_intensity
+			i += e
+			#print_cs()
+			d = (e - e_prev)
+			# d = (e - e_prev) / dt
+			# d = d_prev + ((dt / (RC + dt)) * (d - d_prev))
+			# d_prev = d
+
+			u = (kp * e) + (ki * i) + (kd * d)
+			e_prev = e
+
+			# slewrate
+			# if (SLEW_RATE and t < 1):
+			# 	t = time.clock() - t0
+			# 	max_speed = SPEED_MAX_NATIVE * min(t * SLEW_RATE, 1.0)
+
+			# convert to native speed units (saturated)
+
+			speed_left  = SpeedNativeUnits(saturate(speed_native_units - u, max_speed))
+			speed_right = SpeedNativeUnits(saturate(speed_native_units + u, max_speed))
+
+			# if sleep_time:
+			# 	time.sleep(sleep_time)
+			#print("Speed LEFT: ", speed_left, "    SPEED RIGHT: ", speed_right)
 			self.on(speed_left, speed_right)
 		
 		except KeyboardInterrupt:

@@ -18,12 +18,13 @@ def init():
 	# halt and reset motors
 	hw.motors.stop()
 	hw.motors.reset()
+
 	
 	sleep(1)
 
 	# calibrate gyroscope
 #	hw.motors.wait_until_not_moving()
-#	hw.gs.calibrate()
+	hw.gs.calibrate()
 
 	print("aibot has been initialized")
 

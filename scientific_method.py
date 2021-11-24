@@ -19,10 +19,10 @@ def test():
     try:
         while True:
             hw.motors.follow_line_dual(
-            kp    = 4.3, 
-            ki    = 5.6, 
-            kd    = 0.01, 
-            speed = 10)
+            kp    = 3.5, 
+            ki    = 0.30, 
+            kd    = 0.65, 
+            speed = -10)
     except KeyboardInterrupt:
         print("\n\nInterrupted via CTRL+C")
         app.exit()
@@ -53,11 +53,11 @@ def grap_can():
             app.exit()
 
 
-grap_can()
 
-
-#hw.motors.follow_line_dual(4.0, 0.0, 0.0, -90)
-   
+def ramp_climb():
+    hw.gs.mode='GYRO-ANG'
+    while True:
+            print(hw.gs.value())
 
 
 
