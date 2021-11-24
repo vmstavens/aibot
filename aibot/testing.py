@@ -39,25 +39,45 @@ def cs():
 
 
 def grap_can():
-    hw.motors.on(-50,-50)
-    while True:
-        try:
-            if hw.ts.is_pressed:
-                print("PRESSED")
-                hw.motors.off()
-                hw.mot_g.on(-10)
+    print("HELLO FROM GRAP CAN")
 
-        except KeyboardInterrupt:
-            hw.mot_g.on(0)
-            print("\n\nInterrupted via CTRL+C")
-            app.exit()
+    INIT = 0
+    FOLLOW_LINE = 1
+    GRAP_CAN = 2
+    FIND_LINE = 3
+    STATE = INIT
+
+    while True:
+        if STATE == INIT:
+            STATE = FOLLOW_LINE
+        if STATE == FOLLOW_LINE:
+            hw.motors.line_follow()
+            if hw.ts.ispressed():
+                STATE = GRAP_CAN
+        if STATE == GRAP_CAN:
+            hw.motors.off()
+            hw.mot_g.on(-10)
+            STATE = FIND_LINE
+        if STATE == FIND_LINE:
+            hw.motors.line_follow(speed=10)
+            time.sleep(5)
+            hw.mot_g.off()
+
+
+
+
+
+
+
 
 
 
 def ramp_climb():
-    hw.gs.mode='GYRO-ANG'
     while True:
-            print(hw.gs.value())
+        if(hw.gs.value() >= 10):
+            hw.motors.on(-30)
+        if(hw.gs.value() < 10):
+            hw.line_follow()
 
 
 

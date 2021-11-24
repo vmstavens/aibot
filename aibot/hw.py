@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-
+print("HEJ FRA HW")
 import time
 from math import pi
-# from constants import *
+from aibot.constants import *
+
+
+
+
 
 from ev3dev2.sensor.lego import TouchSensor
 from ev3dev2.sensor.lego import UltrasonicSensor
@@ -15,7 +19,7 @@ from ev3dev2.motor import MoveTank, follow_for_ms, follow_for_forever
 from ev3dev2.motor import SpeedPercent, speed_to_speedvalue, SpeedNativeUnits
 from ev3dev2.wheel import EV3Tire
 
-from aibot.constants import *
+
 
 # ----------------------------------------------------------------------
 
@@ -37,8 +41,17 @@ motors.cs_l    = cs_l
 motors.gyro    = gs
 motors.ts      = ts
 
+
+
 # ----------------------------------------------------------------------
 
+
+# variables for the PID controller
+e = e_prev = i  = 0.0
+
+def reset_PID_variables():
+	e = e_prev = i = 0.0
+	
 # helper methods
 
 def print_cs():
@@ -126,15 +139,15 @@ def follow_until_n_intersections(self, n, min_dist, pos_start, num_seen_intersec
 # def follow_line_dual(self, kp, ki, kd, speed):
 
 
-def follow_line_ramp(self,kp, ki, kd, speed):	
 
-	# PID line follower using both color sensors
+def line_follow(self, kp=3.5, ki=0.30, kd=0.65, speed=-10):	
+
+# PID line follower using both color sensors
 	# requires defintion of color sensors cs_l and cs_r
 
 	# dt = sleep_time
 	# RC = 1 / (2 * pi * LP_CUTOFF_FREQ)
-
-	e = e_prev = i = d_prev = 0.0
+	e = e_prev = i  = 0.0
 
 	speed = speed_to_speedvalue(speed)
 	speed_native_units = speed.to_native_units(self.left_motor)
@@ -145,37 +158,48 @@ def follow_line_ramp(self,kp, ki, kd, speed):
 
 	# while follow_for(self, **kwargs):
 	while True:
-		try:
-			e = self.cs_l.reflected_light_intensity - self.cs_r.reflected_light_intensity
-			i += e
-			#print_cs()
-			d = (e - e_prev)
-			# d = (e - e_prev) / dt
-			# d = d_prev + ((dt / (RC + dt)) * (d - d_prev))
-			# d_prev = d
+		print("GYRO: ", gs.value(), "    STATE: ", STATE)
 
-			u = (kp * e) + (ki * i) + (kd * d)
-			e_prev = e
+		if gs.value() < -10 and STATE == FOLLOW_LINE_FORWARD:
+			return RAMP_UP
+		if ts.value():
+			print("TS PRESSED")
+			return GRAB_CAN
+		if gs.value() > -5 and STATE == RAMP_UP:
+			return FOLLOW_LINE_FORWARD
+		if gs.value() < -10 and STATE == FOLLOW_LINE_BACKWARD:
+			return RAMP_DOWN
+		if gs.value() > -5 and STATE == RAMP_DOWN:
+			return FOLLOW_LINE_BACKWARD
 
-			# slewrate
-			# if (SLEW_RATE and t < 1):
-			# 	t = time.clock() - t0
-			# 	max_speed = SPEED_MAX_NATIVE * min(t * SLEW_RATE, 1.0)
 
-			# convert to native speed units (saturated)
+		e = self.cs_l.reflected_light_intensity - self.cs_r.reflected_light_intensity
+		i += e
+		#print_cs()
+		d = (e - e_prev)
+		# d = (e - e_prev) / dt
+		# d = d_prev + ((dt / (RC + dt)) * (d - d_prev))
+		# d_prev = d
 
-			speed_left  = SpeedNativeUnits(saturate(speed_native_units - u, max_speed))
-			speed_right = SpeedNativeUnits(saturate(speed_native_units + u, max_speed))
+		u = (kp * e) + (ki * i) + (kd * d)
+		e_prev = e
 
-			# if sleep_time:
-			# 	time.sleep(sleep_time)
-			print("Speed LEFT: ", speed_left, "    SPEED RIGHT: ", speed_right)
-			self.on(speed_left, speed_right)
-		
-		except KeyboardInterrupt:
-        		print("\n\nInterrupted via CTRL+C")
-        		self.stop()
-				
+		# slewrate
+		# if (SLEW_RATE and t < 1):
+		# 	t = time.clock() - t0
+		# 	max_speed = SPEED_MAX_NATIVE * min(t * SLEW_RATE, 1.0)
+
+		# convert to native speed units (saturated)
+
+		speed_left  = SpeedNativeUnits(saturate(speed_native_units - u, max_speed))
+		speed_right = SpeedNativeUnits(saturate(speed_native_units + u, max_speed))
+
+		# if sleep_time:
+		# 	time.sleep(sleep_time)
+		#print("Speed LEFT: ", speed_left, "    SPEED RIGHT: ", speed_right)
+		self.on(speed_left, speed_right)
+	
+			
 
 
 def follow_line_dual(self,kp, ki, kd, speed):	
@@ -349,3 +373,4 @@ MoveTank.follow_line_until_can_intersection = follow_line_until_can_intersection
 MoveTank.follow_line_for_dist               = follow_line_for_dist
 MoveTank.follow_gyro_for                    = follow_gyro_for
 MoveTank.follow_gyro_until_intersection     = follow_gyro_until_intersection
+MoveTank.line_follow						= line_follow
