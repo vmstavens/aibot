@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from aibot import app
 from aibot import hw
 from aibot.constants import *
@@ -62,13 +64,6 @@ def grap_can():
             hw.motors.line_follow(speed=10)
             time.sleep(5)
             hw.mot_g.off()
-
-
-
-
-
-
-
 
 
 

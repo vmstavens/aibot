@@ -14,7 +14,6 @@ if __name__ == "__main__":
 		print("Initialization done")
 		state_machine.execute_mission()
 	except KeyboardInterrupt:
-		
 		print("\n\nInterrupted via CTRL+C")
 		app.exit()
 
